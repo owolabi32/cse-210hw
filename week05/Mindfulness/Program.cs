@@ -1,7 +1,5 @@
-Here's an updated version of the code with the additional features:
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 public abstract class Activity
 {
@@ -31,7 +29,6 @@ public abstract class Activity
         ShowSpinner(3);
         Console.WriteLine($"You have completed the {name} Activity for {duration} seconds.");
         ShowSpinner(3);
-        LogActivity();
     }
 
     protected void ShowSpinner(int seconds)
@@ -63,12 +60,6 @@ public abstract class Activity
         }
     }
 
-    protected void LogActivity()
-    {
-        string logEntry = $"{DateTime.Now} - {name} Activity completed for {duration} seconds.{Environment.NewLine}";
-        File.AppendAllText("activity_log.txt", logEntry);
-    }
-
     public abstract void Run();
 }
 
@@ -79,25 +70,13 @@ public class BreathingActivity : Activity
     public override void Run()
     {
         Start();
-        int halfDuration = duration / 2;
-        for (int i = 0; i < duration; i += 2)
+        DateTime endTime = DateTime.Now.AddSeconds(duration);
+        while (DateTime.Now < endTime)
         {
             Console.WriteLine("Breathe in...");
-            for (int j = halfDuration; j > 0; j--)
-            {
-                Console.Write(new string('*', j));
-                System.Threading.Thread.Sleep(100);
-                Console.Write("\r");
-            }
-            Console.WriteLine();
+            ShowCountdown(4);
             Console.WriteLine("Breathe out...");
-            for (int j = halfDuration; j > 0; j--)
-            {
-                Console.Write(new string('*', j));
-                System.Threading.Thread.Sleep(100);
-                Console.Write("\r");
-            }
-            Console.WriteLine();
+            ShowCountdown(4);
         }
         End();
     }
@@ -129,14 +108,7 @@ public class ReflectionActivity : Activity
 
 public class ListingActivity : Activity
 {
-    private List<string> prompts = new List<string>
-    {
-        "Who are people that you appreciate?",
-        "What are personal strengths of yours?",
-        "Who are people that you have helped this week?",
-        "When have you felt the Holy Ghost this month?",
-        "Who are some of your personal heroes?"
-    };
+    private List<string> prompts = new List<string> { "Who are people that you appreciate?", "What are personal strengths of yours?", "Who are people that you have helped this week?", "When have you felt the Holy Ghost this month?", "Who are some of your personal heroes?" };
 
     public ListingActivity() : base("Listing", "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.") { }
 
@@ -146,19 +118,12 @@ public class ListingActivity : Activity
         Random random = new Random();
         string prompt = prompts[random.Next(prompts.Count)];
         Console.WriteLine(prompt);
-        Console.WriteLine("You have a few seconds to think about your answer...");
-        ShowSpinner(3);
-        Console.WriteLine("Start listing items (press Enter after each, blank line to finish):");
+        Console.WriteLine("Get ready to start listing...");
+        ShowCountdown(3);
         DateTime endTime = DateTime.Now.AddSeconds(duration);
         int count = 0;
+        List<string> items = new List<string>();
         while (DateTime.Now < endTime)
         {
-            string input = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(input))
-                break;
-            count++;
+            Console.Write("Enter an item: ");
         }
-        Console.WriteLine($"You listed {count} items!");
-        End();
-    }
-}
